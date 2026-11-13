@@ -1,0 +1,17 @@
+pipeline {
+  agent { label 'prod-agent' }
+  parameters {
+    string(name: 'COMMIT', defaultValue: 'develop', description: 'Commit deployed by test')
+  }
+  stages {
+    stage('Deploy to Prod') {
+      steps {
+        checkout([$class: 'GitSCM',
+          branches: [[name: params.COMMIT]],
+          userRemoteConfigs: [[url: 'https://github.com/IrfusGitAcc/test-prod-jenkins-pipeline.git']]])
+        sh 'cp index.html /var/www/app/index.html'
+        sh 'ls -l /var/www/app'
+      }
+    }
+  }
+}

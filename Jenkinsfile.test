@@ -1,0 +1,18 @@
+pipeline {
+  agent { label 'test-agent' }
+  stages {
+    stage('Deploy to Test') {
+      steps {
+        checkout scm
+        sh 'cp index.html /var/www/app/index.html'
+        sh 'ls -l /var/www/app'
+      }
+    }
+    stage('Trigger Prod') {
+      steps {
+        build job: 'prod', wait: false,
+              parameters: [string(name: 'COMMIT', value: env.GIT_COMMIT)]
+      }
+    }
+  }
+}
